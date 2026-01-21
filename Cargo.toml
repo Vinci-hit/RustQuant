@@ -1,0 +1,86 @@
+[package]
+name = "rust_quant"
+version = "0.1.0"
+edition = "2021"
+authors = ["Quant Team"]
+description = "High-performance single-machine quantitative trading system"
+
+[profile.release]
+codegen-units = 1
+lto = "fat"
+opt-level = 3
+strip = true
+panic = "abort"
+
+[profile.bench]
+inherits = "release"
+debug = true
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.42", features = ["full", "rt-multi-thread", "parking_lot"] }
+tokio-uring = { version = "0.5", optional = true }
+
+# Zero-copy serialization
+rkyv = { version = "0.8", features = ["validation", "bytecheck"] }
+zerocopy = "0.8"
+bytemuck = "1.21"
+
+# High-performance data structures
+crossbeam = "0.8"
+crossbeam-channel = "0.5"
+disruptor = "4.0"
+
+# Core affinity and thread control
+core_affinity = "0.8"
+sysinfo = "0.33"
+
+# Data processing
+polars = { version = "0.46", features = ["lazy", "dtype-datetime", "dtype-f64", "parquet", "streaming"] }
+datafusion = "46"
+arrow = { version = "54", features = ["prettyprint"] }
+parquet = { version = "54", features = ["arrow"] }
+
+# Networking and protocols
+tokio-tungstenite = "0.26"
+futures-util = "0.3"
+reqwest = { version = "0.12", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Memory mapping
+memmap2 = "0.9"
+
+# Time handling
+chrono = "0.4"
+time = "0.3"
+
+# Tracing and monitoring
+tracing = "0.1"
+tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
+tracing-appender = "0.2"
+tracing-tracy = { version = "0.11", optional = true }
+
+# Error handling
+anyhow = "1.0"
+thiserror = "2.0"
+
+# Math and statistics
+ndarray = "0.16"
+statrs = "0.18"
+
+# Utils
+derive_more = { version = "1.0", features = ["display", "error"] }
+parking_lot = "0.12"
+
+[dev-dependencies]
+criterion = { version = "0.5", features = ["html_reports"] }
+pprof = { version = "0.14", features = ["flamegraph", "criterion"] }
+
+[[bench]]
+name = "tick_processing"
+harness = false
+
+[[bench]]
+name = "event_bus"
+harness = false
